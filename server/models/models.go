@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/michaellu2019/democracy/utils"
+	"github.com/michaellu2019/ghostwriters/utils"
 )
 
 var DB *sql.DB

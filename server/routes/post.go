@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/michaellu2019/democracy/models"
-	"github.com/michaellu2019/democracy/utils"
+	"github.com/michaellu2019/ghostwriters/models"
+	"github.com/michaellu2019/ghostwriters/utils"
 )
 
 type Post struct {

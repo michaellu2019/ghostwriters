@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/michaellu2019/democracy/models"
-	"github.com/michaellu2019/democracy/routes"
+	"github.com/michaellu2019/ghostwriters/models"
+	"github.com/michaellu2019/ghostwriters/routes"
 )
 
 func main() {

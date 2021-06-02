@@ -1,4 +1,4 @@
-module github.com/michaellu2019/democracy
+module github.com/michaellu2019/ghostwriters
 
 go 1.15
 
