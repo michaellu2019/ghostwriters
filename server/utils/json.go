@@ -83,13 +83,13 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 
 func SendJSON(w http.ResponseWriter, payload interface{}) {
 	data, err := json.Marshal(payload)
-	QueryErrorCheck(err)
+	ErrorCheck(err)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
 }
 
-func QueryErrorCheck(err error) {
+func ErrorCheck(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
@@ -118,7 +118,7 @@ func RecoverErrorCheck(w http.ResponseWriter) {
 			Status: "ERROR",
 			Data:   "An SQL-related error may have occured.",
 		})
-		QueryErrorCheck(err)
+		ErrorCheck(err)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(data)

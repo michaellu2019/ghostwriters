@@ -12,9 +12,11 @@ func main() {
 	const port string = "8000"
 	fmt.Printf("Running server on %s.\n", port)
 
+	// initialize database
 	models.InitDB()
 	defer models.DB.Close()
 
+	// assign routes to functions
 	http.HandleFunc("/", routes.GetStories)
 
 	http.HandleFunc("/get-stories", routes.GetStories)
@@ -29,5 +31,6 @@ func main() {
 	http.HandleFunc("/like-post", routes.LikePost)
 	http.HandleFunc("/dislike-post", routes.DislikePost)
 
+	// start server
 	http.ListenAndServe("127.0.0.1:"+port, nil)
 }

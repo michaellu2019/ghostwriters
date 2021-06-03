@@ -4,15 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"reflect"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/michaellu2019/ghostwriters/utils"
 )
 
 var DB *sql.DB
 
+// structs for database tables
 type Stories struct {
 	Id        int       `name:"id" props:"INT PRIMARY KEY AUTO_INCREMENT"`
 	Author    string    `name:"author" props:"TEXT"`
@@ -31,6 +34,7 @@ type Posts struct {
 }
 
 func createTable(t reflect.Type, ctx context.Context) {
+	// create a MySQL query to create the speciifed table
 	query := "CREATE TABLE IF NOT EXISTS "
 	var tableName string
 	if t.String() == "models.Stories" {
@@ -39,6 +43,7 @@ func createTable(t reflect.Type, ctx context.Context) {
 		tableName = "posts"
 	}
 
+	// parse the struct field names and tags to generate a MySQL query to create the table
 	query += tableName + "("
 	for i := 0; i < t.NumField(); i++ {
 		columnName := t.Field(i).Tag.Get("name")
@@ -52,18 +57,33 @@ func createTable(t reflect.Type, ctx context.Context) {
 	}
 	query += ")"
 
+	// execute the created MySQL query
 	res, err := DB.ExecContext(ctx, query)
-	utils.QueryErrorCheck(err)
+	utils.ErrorCheck(err)
 
 	rows, err := res.RowsAffected()
-	utils.QueryErrorCheck(err)
+	utils.ErrorCheck(err)
 	fmt.Println(rows, "Created table: "+tableName+".")
 }
 
 func InitDB() {
+	// open a database connection
 	var dbErr error
-	DB, dbErr = sql.Open("mysql", "root:Squatifa7.@tcp(127.0.0.1:3306)/golangtestdb?parseTime=true")
-	utils.QueryErrorCheck(dbErr)
+
+	const dbLang = "mysql"
+
+	err := godotenv.Load("db_config.env")
+	utils.ErrorCheck(err)
+
+	dbUsername := os.Getenv("DB_USERNAME")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbURL := os.Getenv("DB_URL")
+	dbName := os.Getenv("DB_NAME")
+
+	dbConn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", dbUsername, dbPassword, dbURL, dbName)
+
+	DB, dbErr = sql.Open(dbLang, dbConn)
+	utils.ErrorCheck(dbErr)
 
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
