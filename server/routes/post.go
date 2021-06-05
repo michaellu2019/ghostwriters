@@ -103,6 +103,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		defer utils.RecoverErrorCheck(w)
 
 		var p Post
+		var oldPost Post
 		var post Post
 		var s Story
 
@@ -116,6 +117,22 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 			err = selectedRow.Scan(&s.Id, &s.Author, &s.Title, &s.CreatedAt)
 			utils.ErrorCheck(err)
+
+			postRows, err := models.DB.Query("SELECT id, story_id, author, text, likes, dislikes, created_at FROM posts WHERE story_id=? ORDER BY created_at DESC", p.StoryId)
+			utils.ErrorCheck(err)
+
+			if postRows.Next() {
+				err = postRows.Scan(&oldPost.Id, &oldPost.StoryId, &oldPost.Author, &oldPost.Text, &oldPost.Likes, &oldPost.Dislikes, &oldPost.CreatedAt)
+				utils.ErrorCheck(err)
+
+				if oldPost.Author == p.Author {
+					utils.SendJSON(w, ErrorPayload{
+						Status: "ERROR",
+						Data:   "Posting two times in a row not permitted. Please wait for another user to post on this story before posting again.",
+					})
+					return
+				}
+			}
 
 			// insert a new row with the specified values in the JSON object into the posts table
 			row, err := models.DB.Query("INSERT INTO posts(story_id, author, text) VALUES(?, ?, ?)", p.StoryId, p.Author, p.Text)
