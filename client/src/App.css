@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+html {
+  font-size: 100%;
+}
+
+* {
+box-sizing: border-box;
+}
+
+body {
+  text-align: left;
+  font-family: "Roboto", sans-serif;
+}
+
+header h1 {
+  font-size: 3rem;
+}
+
+header h2 {
+  font-size: 2.5rem;
+}
+
+header h3 {
+  font-size: 1.5rem;
+}
+
+header h4 {
+  font-size: 1rem;
+}
+
+.wrapper {
+  background-color: #ffffff;
+  color: #000000;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+header.primary {
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.26);
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 3rem;
+  position: fixed;
+  top: 0;
+  user-select: none;
+}
+
+header.primary nav {
+  display: grid;
+  grid-template-areas: 'heading nav-buttons';
+}
+
+header.primary span.heading {
+  font-size: 1.5rem;
+  margin: auto 0rem;
+  grid-area: heading;
+  justify-self: start;
+}
+
+header.primary span.heading img {
+  height: 3rem;
+}
+
+header.primary a.nav-link {
+  color: #000000;
+}
+
+a.nav-link, a {
+  text-decoration: none;
+}
+
+.nav-buttons {
+  margin: auto 0rem;
+  list-style: none;
+  grid-area: nav-buttons;
+  justify-self: end;
+}
+
+.nav-buttons li {
+  display: inline-block;
+  margin: 0.5em 1.25em;
+}
+
+.nav-buttons li a.nav-link {
+  color: #000000;
+  font-size: 1.25rem;
+  font-weight: bold;
+  transition: 0.3s ease-in-out;
+}
+
+.nav-buttons li a.nav-link:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+main.primary {
+  padding: 5rem 3rem;
+}
+
+.stories-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 2rem;
+}
+
+.story-card {
+  border-radius: 0.25rem;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  background-color: #ffcdd2;
+  color: #000000;
+  padding: 1rem 2rem;
+  transition: 0.25s ease-in-out;
+}
+
+.story-card:hover {
+  transform: scale(1.05) translate3d(0px, -0.5px, 0px);;
+  box-shadow: 0px 19px 43px rgba(0, 0, 0, 0.15);
+}
