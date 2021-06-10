@@ -21,7 +21,6 @@ function Bookshelf() {
 
     if (storiesData.status == "OK") {
       setStories([...stories, ...storiesData.data.stories]);
-      console.log(stories);
     }
   }
 
@@ -29,6 +28,7 @@ function Bookshelf() {
     <article>
       <header>
         <h1>Public Stories</h1>
+        <h3>Click on a story to view and edit it!</h3>
       </header>
 
       <div className="content">
