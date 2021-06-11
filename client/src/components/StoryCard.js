@@ -9,8 +9,8 @@ function StoryCard(props) {
           <h3><i>{props.title}</i></h3>
           <h5>by {props.author}</h5>
         </header>
-        <img src="" />
-        <footer>Posts: {props.content.length}</footer>
+        <img src={props.imageURL} />
+        <footer>Posts: {props.content != null ? props.content.length : 0}</footer>
       </div>
     </Link>
   );

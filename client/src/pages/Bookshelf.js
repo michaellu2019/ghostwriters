@@ -34,7 +34,7 @@ function Bookshelf() {
       <div className="content">
         <div className="stories-container">
           {stories.map((story => 
-            <StoryCard key={story.id} id={story.id} author={story.author} title={story.title} content={story.content} createdAt={story.createdAt} />
+            <StoryCard key={story.id} id={story.id} author={story.author} title={story.title} imageURL={story.image_url} content={story.content} createdAt={story.createdAt} />
           ))}
         </div>
       </div>

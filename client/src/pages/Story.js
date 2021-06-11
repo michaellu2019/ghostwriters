@@ -21,30 +21,55 @@ function Story(props) {
       headers: { "Content-Type": "application/json" }
     };
 
-    const response = await fetch("/api/get-story?id=" + storyId, requestOptions);
-    const storiesData =  await response.json();
+    const storiesResponse = await fetch("/api/get-story?id=" + storyId, requestOptions);
+    const storiesData =  await storiesResponse.json();
 
     if (storiesData.status == "OK") {
       setStories([...storiesData.data.stories]);
     }
   }
 
+  async function likePost(id) {
+    if (props.loggedIn) {
+      const postLike = {
+        id: id,
+        author: props.user.username + ":" + props.user.userId,
+      };
+
+      const requestOptions = {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postLike),
+      };
+
+      const response = await fetch(props.user.likedPosts.hasOwnProperty(id) ? "api/unlike-post" : "/api/like-post", requestOptions);
+      const storiesData =  await response.json();
+
+      if (storiesData.status == "OK") {
+        getData();
+        props.login(props.user);
+        props.userLikePost(id);
+      } else {
+        setErrorMsg(storiesData.data);
+      }
+    }
+  }
+
   async function submitPost(e) {
     e.preventDefault();
 
-    const newPost = {
+    const post = {
       story_id: parseInt(storyId),
-      author: props.user.username,
+      author: props.user.username + ":" + props.user.userId,
       text: postInput.current.value,
     };
-
-    console.log(newPost)
 
     const requestOptions = {
       method: "POST",
       mode: "cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newPost),
+      body: JSON.stringify(post),
     };
 
     const response = await fetch("/api/create-post", requestOptions);
@@ -62,16 +87,16 @@ function Story(props) {
   return (
     <article className="story">
       {stories.map((story => 
-        <div>
+        <div key={story.id}>
           <header>
             <h1><i>{story.title}</i></h1>
             <h3>by {story.author}</h3>
           </header>
 
           <div className="content">
-            {story.content.map((post => 
-              <Post key={post.id} id={post.id} author={post.author} text={post.text} likes={post.likes} dislikes={post.dislikes} createdAt={post.created_at}/>
-            ))}
+            {story.content != null ? story.content.map((post => 
+              <Post key={post.id} id={post.id} author={post.author} text={post.text} likes={post.likes} dislikes={post.dislikes} createdAt={post.created_at} liked={props.user.hasOwnProperty("likedPosts") && props.user.likedPosts.hasOwnProperty(post.id)} likePost={likePost} />
+            )) : ""}
           </div>
         </div>
       ))}

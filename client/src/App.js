@@ -10,11 +10,40 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
 
-  function login(user) {
+  async function login(user) {
     if (user.hasOwnProperty("userId") && user.hasOwnProperty("username")) {
       setLoggedIn(true);
-      setUser(user);
-      console.log(user);
+      user.likedPosts = {};
+
+      const requestOptions = {
+        method: "GET",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      const postLikesResponse = await fetch("/api/get-author-post-likes?author=" + user.username + ":" + user.userId, requestOptions);
+      const postLikesData =  await postLikesResponse.json();
+  
+      console.log(postLikesData, "/api/get-author-post-likes?author=" + user.username + ":" + user.userId)
+      if (postLikesData.status == "OK" && postLikesData.data.post_likes != null) {
+        postLikesData.data.post_likes.forEach(post => {
+          console.log(post.post_id, post.author)
+          user.likedPosts[post.post_id] = post.author;
+        });
+      }
+    }
+    setUser(user);
+  }
+
+  function userLikePost(id) {
+    if (user.hasOwnProperty("likedPosts")) {
+      setUser((oldUser => ({
+        ...oldUser,
+        [oldUser.likedPosts]: {
+          ...oldUser.likedPosts, 
+          [id]: oldUser.username + ":" + oldUser.userId,
+        },
+      })));
     }
   }
 
@@ -31,8 +60,8 @@ function App() {
         </header>
 
       <main className="primary">
-        <Route exact path="/" render={() => <Bookshelf loggedIn={loggedIn} user={user} login={login} />} />
-        <Route exact path="/story/:id" render={() => <Story loggedIn={loggedIn} user={user} login={login} />} />
+        <Route exact path="/" render={() => <Bookshelf loggedIn={loggedIn} user={user} login={login} userLikePost={userLikePost} />} />
+        <Route exact path="/story/:id" render={() => <Story loggedIn={loggedIn} user={user} login={login} userLikePost={userLikePost} />} />
       </main>
     </div>
   );
