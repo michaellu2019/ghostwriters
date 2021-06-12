@@ -25,7 +25,7 @@ func main() {
 	models.InitDB()
 	defer models.DB.Close()
 
-	fs := http.FileServer(http.Dir("../client/build"))
+	fs := http.FileServer(http.Dir("./build"))
 	http.Handle("/", fs)
 
 	// assign routes to functions

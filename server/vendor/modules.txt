@@ -7,7 +7,3 @@ github.com/golang/gddo/httputil/header
 # github.com/joho/godotenv v1.3.0
 ## explicit
 github.com/joho/godotenv
-# github.com/kr/fs v0.1.0
-## explicit
-# github.com/tools/godep v0.0.0-20180126220526-ce0bfadeb516
-## explicit
