@@ -1,0 +1,13 @@
+# github.com/go-sql-driver/mysql v1.6.0
+## explicit
+github.com/go-sql-driver/mysql
+# github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
+## explicit
+github.com/golang/gddo/httputil/header
+# github.com/joho/godotenv v1.3.0
+## explicit
+github.com/joho/godotenv
+# github.com/kr/fs v0.1.0
+## explicit
+# github.com/tools/godep v0.0.0-20180126220526-ce0bfadeb516
+## explicit

@@ -4,7 +4,9 @@ import { Route, Link } from 'react-router-dom';
 import Bookshelf from './pages/Bookshelf';
 import Story from './pages/Story';
 
-import './App.css';
+import './styles/App.css';
+import './styles/bookshelf.css';
+import './styles/story.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);

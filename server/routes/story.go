@@ -14,6 +14,7 @@ type Story struct {
 	Id        int       `json:"id"`
 	Author    string    `json:"author"`
 	Title     string    `json:"title"`
+	ImageURL  string    `json:"image_url"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -21,6 +22,7 @@ type StoryPayload struct {
 	Id        int       `json:"id"`
 	Author    string    `json:"author"`
 	Title     string    `json:"title"`
+	ImageURL  string    `json:"image_url"`
 	CreatedAt time.Time `json:"created_at"`
 	Content   []Post    `json:"content"`
 }
@@ -43,7 +45,7 @@ func GetStories(w http.ResponseWriter, r *http.Request) {
 		defer utils.RecoverErrorCheck(w)
 
 		// get all rows in the stories table
-		storyRows, err := models.DB.Query("SELECT id, author, title, created_at FROM stories")
+		storyRows, err := models.DB.Query("SELECT id, author, title, image_url, created_at FROM stories")
 		utils.ErrorCheck(err)
 
 		var story Story
@@ -51,13 +53,14 @@ func GetStories(w http.ResponseWriter, r *http.Request) {
 
 		// add all story row column data to a map that connects story IDs to a story payload data struct for the particular story ID
 		for storyRows.Next() {
-			err = storyRows.Scan(&story.Id, &story.Author, &story.Title, &story.CreatedAt)
+			err = storyRows.Scan(&story.Id, &story.Author, &story.Title, &story.ImageURL, &story.CreatedAt)
 			utils.ErrorCheck(err)
 
 			storyMap[story.Id] = &StoryPayload{
 				Id:        story.Id,
 				Author:    story.Author,
 				Title:     story.Title,
+				ImageURL:  story.ImageURL,
 				CreatedAt: story.CreatedAt,
 			}
 		}
@@ -99,7 +102,7 @@ func GetStoryTitles(w http.ResponseWriter, r *http.Request) {
 		defer utils.RecoverErrorCheck(w)
 
 		// get all rows in the stories table
-		rows, err := models.DB.Query("SELECT id, author, title, created_at FROM stories")
+		rows, err := models.DB.Query("SELECT id, author, title, image_url, created_at FROM stories")
 		utils.ErrorCheck(err)
 
 		var story Story
@@ -109,13 +112,14 @@ func GetStoryTitles(w http.ResponseWriter, r *http.Request) {
 
 		// add all story row column data to the payload data struct
 		for rows.Next() {
-			err = rows.Scan(&story.Id, &story.Author, &story.Title, &story.CreatedAt)
+			err = rows.Scan(&story.Id, &story.Author, &story.Title, &story.ImageURL, &story.CreatedAt)
 			utils.ErrorCheck(err)
 
 			storyPayload := StoryPayload{
 				Id:        story.Id,
 				Author:    story.Author,
 				Title:     story.Title,
+				ImageURL:  story.ImageURL,
 				CreatedAt: story.CreatedAt,
 			}
 			payload.Data.Stories = append(payload.Data.Stories, storyPayload)
@@ -148,16 +152,17 @@ func GetStory(w http.ResponseWriter, r *http.Request) {
 		var story Story
 
 		// get the row in the posts table with the specified story ID
-		storyRow := models.DB.QueryRow("SELECT id, author, title, created_at FROM stories WHERE id=?", storyId)
+		storyRow := models.DB.QueryRow("SELECT id, author, title, image_url, created_at FROM stories WHERE id=?", storyId)
 
 		// add all story row column data to the data struct
-		err := storyRow.Scan(&story.Id, &story.Author, &story.Title, &story.CreatedAt)
+		err := storyRow.Scan(&story.Id, &story.Author, &story.Title, &story.ImageURL, &story.CreatedAt)
 		utils.ErrorCheck(err)
 
 		storyPayload := StoryPayload{
 			Id:        story.Id,
 			Author:    story.Author,
 			Title:     story.Title,
+			ImageURL:  story.ImageURL,
 			CreatedAt: story.CreatedAt,
 		}
 
@@ -199,22 +204,23 @@ func CreateStory(w http.ResponseWriter, r *http.Request) {
 		utils.JSONErrorCheck(w, err)
 
 		// make sure no empty data was sent
-		if len(s.Author) > 0 && len(s.Title) > 0 {
+		if len(s.Author) > 0 && len(s.Title) > 0 && len(s.ImageURL) > 0 {
 			// insert a new row with the specified values in the JSON object into the stories table
-			row, err := models.DB.Query("INSERT INTO stories(author, title) VALUES(?, ?)", s.Author, s.Title)
+			row, err := models.DB.Query("INSERT INTO stories(author, title, image_url) VALUES(?, ?, ?)", s.Author, s.Title, s.ImageURL)
 			utils.ErrorCheck(err)
 
 			defer row.Close()
 
 			// get the row column data that was just inserted and add it to the payload
-			insertedRow := models.DB.QueryRow("SELECT id, author, title, created_at FROM stories WHERE author=? AND title=?", s.Author, s.Title)
-			err = insertedRow.Scan(&story.Id, &story.Author, &story.Title, &story.CreatedAt)
+			insertedRow := models.DB.QueryRow("SELECT id, author, title, image_url, created_at FROM stories WHERE author=? AND title=? AND image_url=?", s.Author, s.Title, s.ImageURL)
+			err = insertedRow.Scan(&story.Id, &story.Author, &story.Title, &story.ImageURL, &story.CreatedAt)
 			utils.ErrorCheck(err)
 
 			storyPayload := StoryPayload{
 				Id:        story.Id,
 				Author:    story.Author,
 				Title:     story.Title,
+				ImageURL:  story.ImageURL,
 				CreatedAt: story.CreatedAt,
 			}
 			payload := StoryListPayload{
@@ -226,7 +232,7 @@ func CreateStory(w http.ResponseWriter, r *http.Request) {
 		} else {
 			utils.SendJSON(w, ErrorPayload{
 				Status: "ERROR",
-				Data:   "Empty author/title value.",
+				Data:   "Empty author/title/image URL value.",
 			})
 		}
 	default:
@@ -250,8 +256,8 @@ func DeleteStory(w http.ResponseWriter, r *http.Request) {
 		utils.JSONErrorCheck(w, err)
 
 		// get the row in the stories table that has the specified story ID so that its data can be returned when deleted
-		deletedRow := models.DB.QueryRow("SELECT id, author, title, created_at FROM stories WHERE id=?", s.Id)
-		err = deletedRow.Scan(&story.Id, &story.Author, &story.Title, &story.CreatedAt)
+		deletedRow := models.DB.QueryRow("SELECT id, author, title, image_url, created_at FROM stories WHERE id=?", s.Id)
+		err = deletedRow.Scan(&story.Id, &story.Author, &story.Title, &story.ImageURL, &story.CreatedAt)
 		utils.ErrorCheck(err)
 
 		// delete the row with the specified story ID from the stories table
@@ -265,6 +271,7 @@ func DeleteStory(w http.ResponseWriter, r *http.Request) {
 			Id:        story.Id,
 			Author:    story.Author,
 			Title:     story.Title,
+			ImageURL:  story.ImageURL,
 			CreatedAt: story.CreatedAt,
 		}
 		payload := StoryListPayload{

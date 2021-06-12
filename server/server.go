@@ -17,7 +17,7 @@ func main() {
 	defer models.DB.Close()
 
 	fs := http.FileServer(http.Dir("../client/build"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.Handle("/", fs)
 
 	// assign routes to functions
 	http.HandleFunc("/api", routes.GetStories)
@@ -32,7 +32,11 @@ func main() {
 	http.HandleFunc("/api/create-post", routes.CreatePost)
 	http.HandleFunc("/api/delete-post", routes.DeletePost)
 	http.HandleFunc("/api/like-post", routes.LikePost)
-	http.HandleFunc("/api/dislike-post", routes.DislikePost)
+	http.HandleFunc("/api/unlike-post", routes.UnlikePost)
+
+	http.HandleFunc("/api/get-all-post-likes", routes.GetAllPostLikes)
+	http.HandleFunc("/api/get-post-likes", routes.GetPostLikes)
+	http.HandleFunc("/api/get-author-post-likes", routes.GetAuthorPostLikes)
 
 	// start server
 	http.ListenAndServe("127.0.0.1:"+port, nil)

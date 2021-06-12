@@ -20,6 +20,7 @@ type Stories struct {
 	Id        int       `name:"id" props:"INT PRIMARY KEY AUTO_INCREMENT"`
 	Author    string    `name:"author" props:"TEXT"`
 	Title     string    `name:"title" props:"TEXT"`
+	ImageURL  string    `name:"image_url" props:"TEXT"`
 	CreatedAt time.Time `name:"created_at" props:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP"`
 }
 
@@ -33,6 +34,13 @@ type Posts struct {
 	CreatedAt time.Time `name:"created_at" props:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP"`
 }
 
+type PostLikes struct {
+	Id        int       `name:"id" props:"INT PRIMARY KEY AUTO_INCREMENT"`
+	PostId    int       `name:"post_id" props:"INT NOT NULL"`
+	Author    string    `name:"author" props:"TEXT"`
+	CreatedAt time.Time `name:"created_at" props:"TIMESTAMP DEFAULT CURRENT_TIMESTAMP"`
+}
+
 func createTable(t reflect.Type, ctx context.Context) {
 	// create a MySQL query to create the speciifed table
 	query := "CREATE TABLE IF NOT EXISTS "
@@ -41,6 +49,8 @@ func createTable(t reflect.Type, ctx context.Context) {
 		tableName = "stories"
 	} else if t.String() == "models.Posts" {
 		tableName = "posts"
+	} else if t.String() == "models.PostLikes" {
+		tableName = "post_likes"
 	}
 
 	// parse the struct field names and tags to generate a MySQL query to create the table
@@ -93,4 +103,7 @@ func InitDB() {
 
 	var posts Posts
 	createTable(reflect.TypeOf(posts), ctx)
+
+	var postLikes PostLikes
+	createTable(reflect.TypeOf(postLikes), ctx)
 }
