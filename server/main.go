@@ -3,13 +3,22 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/michaellu2019/ghostwriters/models"
 	"github.com/michaellu2019/ghostwriters/routes"
+	"github.com/michaellu2019/ghostwriters/utils"
 )
 
 func main() {
-	const port string = "8000"
+	err := godotenv.Load("db_config.env")
+	utils.ErrorCheck(err)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
 	fmt.Printf("Running server on %s.\n", port)
 
 	// initialize database
@@ -39,5 +48,5 @@ func main() {
 	http.HandleFunc("/api/get-author-post-likes", routes.GetAuthorPostLikes)
 
 	// start server
-	http.ListenAndServe("127.0.0.1:"+port, nil)
+	http.ListenAndServe(":"+port, nil)
 }

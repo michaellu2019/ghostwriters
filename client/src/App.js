@@ -14,6 +14,7 @@ function App() {
 
   async function login(user) {
     if (user.hasOwnProperty("userId") && user.hasOwnProperty("username")) {
+      console.log(user)
       setLoggedIn(true);
       user.likedPosts = {};
 
@@ -26,10 +27,8 @@ function App() {
       const postLikesResponse = await fetch("/api/get-author-post-likes?author=" + user.username + ":" + user.userId, requestOptions);
       const postLikesData =  await postLikesResponse.json();
   
-      console.log(postLikesData, "/api/get-author-post-likes?author=" + user.username + ":" + user.userId)
       if (postLikesData.status == "OK" && postLikesData.data.post_likes != null) {
         postLikesData.data.post_likes.forEach(post => {
-          console.log(post.post_id, post.author)
           user.likedPosts[post.post_id] = post.author;
         });
       }
